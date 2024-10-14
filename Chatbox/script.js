@@ -1,94 +1,233 @@
+// API keys for different services
+const GEMINI_API_KEY = "YOUR-API-KEY";  
+const TRANSLATION_API_KEY = "YOUR-API-KEY";  
+const WEATHER_API_KEY = 'YOUR-API-KEY';  
+
+// API URLs for each service
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+const TRANSLATE_API_URL = `https://translation.googleapis.com/language/translate/v2?key=${TRANSLATION_API_KEY}`;
+
+// Weather API logic for multiple cities in Taiwan
+const cities = [
+  { english: 'Taipei', chinese: '台北' },
+  { english: 'Taichung', chinese: '台中' },
+  { english: 'Kaohsiung', chinese: '高雄' },
+  { english: 'Tainan', chinese: '台南' },
+  { english: 'Keelung', chinese: '基隆' },
+  { english: 'Hsinchu', chinese: '新竹' },
+  { english: 'Chiayi', chinese: '嘉義' },
+  { english: 'Yilan', chinese: '宜蘭' },
+  { english: 'Pingtung', chinese: '屏東' },
+  { english: 'Taitung', chinese: '台東' },
+  { english: 'Nantou', chinese: '南投' }
+];
+
+// Function to determine the city name based on user input (English or Chinese)
+const getCityName = (input) => {
+  const city = cities.find(c => c.english === input || c.chinese === input);
+  if (city) {
+      return city.english;  // Return the English name to use in the API
+  }
+  return input;  // If not found, use the original input
+};
+
+// Function to fetch weather data for the city
+const fetchWeatherData = async (cityInput) => {
+  const cityName = getCityName(cityInput);  // Translate to English if necessary
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName},TW&appid=${WEATHER_API_KEY}&lang=zh_tw`;
+
+  try {
+      const response = await fetch(url);
+      if (!response.ok) {
+          throw new Error(`Error fetching weather data for ${cityInput}: ${response.statusText}`);
+      }
+      const data = await response.json();
+      console.log(`Weather data for ${cityInput}:`, data);
+  } catch (error) {
+      console.error(error);
+  }
+};
+
+// Fetch weather for all cities
+const fetchAllCitiesWeather = async (userInput) => {
+  const weatherPromises = cities.map(city => fetchWeatherData(city.english));
+  await Promise.all(weatherPromises);
+};
+
+// Example: Fetching weather for user input (supports Chinese or English)
+fetchWeatherData('台北');  // Will fetch weather for 'Taipei'
+fetchWeatherData('Kaohsiung');  // Will fetch weather for 'Kaohsiung'
+
+// Chatbot and DOM Setup
 const chatbotToggler = document.querySelector(".chatbot-toggler");
 const closeBtn = document.querySelector(".close-btn");
 const chatbox = document.querySelector(".chatbox");
 const chatInput = document.querySelector(".chat-input textarea");
-const sendChatBtn = document.querySelector(".chat-input span");
+const sendChatBtn = document.querySelector("#send-btn");
+const micBtn = document.getElementById("mic-btn");
+const copyright = document.querySelector('.copyright');
 
-let userMessage = null; // Variable to store user's message
+let userMessage = null;
 const inputInitHeight = chatInput.scrollHeight;
+let debounceTimer = null; // Timer for debouncing
 
-// API configuration
-const API_KEY = "Your-api-key"; // Your API key here
-const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`;
+// Speech Recognition setup
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.lang = 'zh-CN';
+recognition.interimResults = false;
 
-const createChatLi = (message, className) => {
-  // Create a chat <li> element with passed message and className
-  const chatLi = document.createElement("li");
-  chatLi.classList.add("chat", `${className}`);
-  let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
-  chatLi.innerHTML = chatContent;
-  chatLi.querySelector("p").textContent = message;
-  return chatLi; // return chat <li> element
-}
-
-const generateResponse = async (chatElement) => {
-  const messageElement = chatElement.querySelector("p");
-
-  // Define the properties and message for the API request
+// Function to translate Pinyin to Traditional Chinese
+const translatePinyinToChinese = async (pinyinText) => {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ 
-      contents: [{ 
-        role: "user", 
-        parts: [{ text: userMessage }] 
-      }] 
+    body: JSON.stringify({
+      q: pinyinText,
+      source: "zh",
+      target: "zh-TW",
+      format: "text",
     }),
-  }
+  };
 
-  // Send POST request to API, get response and set the reponse as paragraph text
   try {
-    const response = await fetch(API_URL, requestOptions);
+    console.log("Translating:", pinyinText); // Log the Pinyin text being sent for translation
+    const response = await fetch(TRANSLATE_API_URL, requestOptions);
+    const data = await response.json();
+    console.log("Translation response:", data); // Log the translation response
+    if (!response.ok) throw new Error(data.error.message);
+    return data.data.translations[0].translatedText;
+  } catch (error) {
+    console.error("Translation error:", error);
+    return pinyinText; // Fallback to original Pinyin if translation fails
+  }
+};
+
+// Function to generate chatbot response using Gemini API
+const generateResponse = async (chatElement) => {
+  const messageElement = chatElement.querySelector("p");
+
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: userMessage }] }],
+    }),
+  };
+
+  try {
+    const response = await fetch(GEMINI_API_URL, requestOptions);
     const data = await response.json();
     if (!response.ok) throw new Error(data.error.message);
-    
-    // Get the API response text and update the message element
-    messageElement.textContent = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, '$1');
+
+    messageElement.textContent = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1");
   } catch (error) {
-    // Handle error
     messageElement.classList.add("error");
     messageElement.textContent = error.message;
   } finally {
     chatbox.scrollTo(0, chatbox.scrollHeight);
   }
-}
+};
 
-const handleChat = () => {
-  userMessage = chatInput.value.trim(); // Get user entered message and remove extra whitespace
+// Function to create chat message elements
+const createChatLi = (message, className) => {
+  const chatLi = document.createElement("li");
+  chatLi.classList.add("chat", `${className}`);
+  let chatContent = className === "outgoing" 
+    ? `<p></p>` 
+    : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
+  chatLi.innerHTML = chatContent;
+  chatLi.querySelector("p").textContent = message;
+  return chatLi;
+};
+
+// Handle chat input
+const handleChat = async () => {
+  userMessage = chatInput.value.trim();
   if (!userMessage) return;
 
-  // Clear the input textarea and set its height to default
   chatInput.value = "";
   chatInput.style.height = `${inputInitHeight}px`;
 
-  // Append the user's message to the chatbox
   chatbox.appendChild(createChatLi(userMessage, "outgoing"));
   chatbox.scrollTo(0, chatbox.scrollHeight);
 
+  const chineseText = await translatePinyinToChinese(userMessage);
+  chatbox.appendChild(createChatLi(`Heard：${chineseText}`, "incoming"));
+  chatbox.scrollTo(0, chatbox.scrollHeight);
+
   setTimeout(() => {
-    // Display "Thinking..." message while waiting for the response
     const incomingChatLi = createChatLi("Thinking...", "incoming");
     chatbox.appendChild(incomingChatLi);
     chatbox.scrollTo(0, chatbox.scrollHeight);
     generateResponse(incomingChatLi);
   }, 600);
-}
+};
 
-chatInput.addEventListener("input", () => {
-  // Adjust the height of the input textarea based on its content
-  chatInput.style.height = `${inputInitHeight}px`;
-  chatInput.style.height = `${chatInput.scrollHeight}px`;
-});
+// Debounced translation while typing
+const handleInputChange = async () => {
+  const inputText = chatInput.value.trim();
+  if (!inputText) return;
 
-chatInput.addEventListener("keydown", (e) => {
-  // If Enter key is pressed without Shift key and the window 
-  // width is greater than 800px, handle the chat
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(async () => {
+    const translatedText = await translatePinyinToChinese(inputText);
+    chatInput.value = translatedText; // Replace Pinyin with Chinese text
+  }, 300); // Adjust delay
+};
+
+// Event Listeners
+chatInput.addEventListener("input", handleInputChange);
+sendChatBtn.addEventListener("click", handleChat);
+
+chatInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
     e.preventDefault();
-    handleChat();
+    await handleChat();
   }
 });
 
-sendChatBtn.addEventListener("click", handleChat);
+micBtn.addEventListener("click", () => {
+  recognition.start();
+  micBtn.classList.add("listening");
+});
+
+recognition.addEventListener("result", async (event) => {
+  const transcript = event.results[0][0].transcript;
+  console.log("Recognized Speech:", transcript); // Log the recognized speech
+  chatInput.value = transcript; // Display Pinyin initially
+
+  // Automatically convert Pinyin to Traditional Chinese
+  try {
+      const chineseText = await translatePinyinToChinese(transcript);
+      chatInput.value = chineseText; // Update the chat input with the translated text
+    } catch (error) {
+      console.error("Translation error:", error);
+    }
+
+    recognition.stop(); // Stop recognition after processing
+    micBtn.classList.remove("listening");
+});
+
 closeBtn.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
 chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
+
+// Adjust chatbox height 
+const adjustChatboxHeight = () => {
+  const inputHeight = 55;
+  const copyrightHeight = 30;
+
+  chatbox.style.maxHeight = `calc(100vh - ${inputHeight + copyrightHeight + 20}px)`;
+  chatbox.style.overflowY = 'auto';
+};
+
+adjustChatboxHeight();
+window.addEventListener('resize', adjustChatboxHeight);
+
+chatbox.addEventListener('scroll', () => {
+  const scrollTop = chatbox.scrollTop;
+  const scrollHeight = chatbox.scrollHeight;
+  const clientHeight = chatbox.clientHeight;
+
+  copyright.style.opacity = scrollTop + clientHeight >= scrollHeight - 10 ? '1' : '1';
+});
