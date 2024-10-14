@@ -71,7 +71,7 @@ body.show-chatbot .chatbot {
 }
 
 .chatbot header {
-  padding: 16px 0;
+  padding: 20px 0;
   position: relative;
   text-align: center;
   color: #fff;
@@ -94,8 +94,41 @@ header h2 {
 
 .chatbot .chatbox {
   overflow-y: auto;
+  max-height: 400px;
   height: 510px;
   padding: 30px 20px 100px;
+  position: relative;
+}
+
+.chatbot .chat-input {
+  height: 70px; 
+  max-height: 150px;
+  position: sticky; 
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  z-index: 10; /* Ensure input stays above chat messages */
+  overflow-y: auto;
+}
+
+.chatbox::before {
+  content: "©2024 黃伶俐/Cindy"; 
+  position: absolute; 
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust position */
+  font-size: 2rem; /* Adjust font size */
+  color: rgba(200, 119, 119, 0.5); 
+  white-space: nowrap; 
+  pointer-events: none; 
+  z-index: 0; 
+}
+
+.chatbox p {
+  position: relative; /* Ensure chat messages are on top */
+  z-index: 1; /* Raise chat messages above background text */
 }
 
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
@@ -141,7 +174,7 @@ header h2 {
   border-radius: 10px 10px 0 10px;
   max-width: 75%;
   color: #fff;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   background: #e52525;
 }
 
@@ -166,7 +199,7 @@ header h2 {
   bottom: 0;
   width: 100%;
   background: #fff;
-  padding: 3px 20px;
+  padding: 3px 10px;
   border-top: 1px solid #ddd;
 }
 
@@ -176,24 +209,63 @@ header h2 {
   border: none;
   outline: none;
   resize: none;
-  max-height: 180px;
-  padding: 15px 15px 15px 0;
-  font-size: 1.25rem;
+  max-height: 100px;
+  padding: 20px 15px 20px 10px; /* Add more padding for bigger space around the text */
+  font-size: 1.5rem;
+  overflow: hidden;
 }
 
 .chat-input span {
   align-self: flex-end;
   color: #ad4141;
   cursor: pointer;
-  height: 70px;
+  height: 60px;
+  width: 60px;
   display: flex;
   align-items: center;
   visibility: visible;
   font-size: 2rem;
+  margin-right: 10px;
 }
 
 .chat-input textarea:valid~span {
   visibility: visible;
+}
+
+#mic-btn {
+  font-size: 2rem; /* Increase font size */
+  height: 60px; 
+  width: 60px; 
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+#mic-btn.listening {
+  background-color: #dc8879; /* Change background color when active */
+  color: #fff; /* Change text/icon color */
+  animation: pulse 1s infinite; 
+}
+
+.copyright {
+  position: absolute; /* Position it at the bottom left */
+  left: 10px; 
+  bottom: 10px; 
+  color: white; 
+  padding: 5px; 
+  z-index: 1000; 
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @media (max-width: 490px) {
@@ -216,121 +288,17 @@ header h2 {
   }
 
   .chatbot .chat-input {
-    padding: 5px 15px;
+    display: flex;
+    gap: 5px;
+    position: absolute; /* Keep input area fixed at the bottom */
+    bottom: 0; /* Position at the bottom of the chatbot */
+    width: 100%;
+    background: #fff;
+    padding: 3px 10px; 
+    border-top: 1px solid #ddd; 
   }
 
   .chatbot header span {
     display: block;
   }
-}
-
-/* Google Fonts - Poppins */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-}
-
-section {
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  background: #e3f2fd;
-}
-
-button {
-  font-size: 18px;
-  font-weight: 400;
-  color: #fff;
-  padding: 14px 22px;
-  border: none;
-  background: #8f1f1f;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease; /* Smoother transition for button hover */
-}
-
-button:hover {
-  background-color: #8f1f1f;
-}
-
-button.show-modal,
-.modal-box {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-}
-
-section.active .show-modal {
-  display: none;
-}
-
-.overlay {
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease; /* Smooth fade-in of overlay */
-}
-
-section.active .overlay {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.modal-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 380px;
-  width: 100%;
-  padding: 30px 20px;
-  border-radius: 24px;
-  background-color: #fff;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  transform: translate(-50%, -50%) scale(1.2);
-}
-
-section.active .modal-box {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.modal-box i {
-  font-size: 70px;
-  color: #e23333;
-}
-
-.modal-box h2 {
-  margin-top: 20px;
-  font-size: 25px;
-  font-weight: 500;
-  color: #333;
-}
-
-.modal-box h3 {
-  font-size: 16px;
-  font-weight: 400;
-  color: #333;
-  text-align: center;
-}
-
-.modal-box .buttons {
-  margin-top: 25px;
-}
-
-.modal-box button {
-  font-size: 14px;
-  padding: 6px 12px;
-  margin: 0 10px;
 }
