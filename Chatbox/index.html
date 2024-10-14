@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Taiwan Travel Map</title>
+  <title>AI Assisted AQI Map</title>
   <link rel="stylesheet" href="style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Google Fonts Link For Icons -->
@@ -15,28 +15,32 @@
 </head>
 
 <body>
-  <button class="chatbot-toggler">
-    <span class="material-symbols-rounded">mode_comment</span>
-    <span class="material-symbols-outlined">close</span>
-  </button>
-  <div class="chatbot">
-    <header>
-      <h2>Chatbot</h2>
-      <span class="close-btn material-symbols-outlined">close</span>
-    </header>
-    <ul class="chatbox">
-      <li class="chat incoming">
-        <span class="material-symbols-outlined">smart_toy</span>
-        <p>歡迎來台灣! Welcome to Taiwan!<br>Feel free to ask question in 中文 or english.</p>
-      </li>
-    </ul>
-    <div class="chat-input">
-      <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
-      <span id="mic-btn" class="material-symbols-rounded">mic</span>
-      <span id="send-btn" class="material-symbols-rounded">send</span>
+  <div id="chatbox">
+    <button class="chatbot-toggler">
+      <span class="material-symbols-rounded">mode_comment</span>
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <div class="chatbot">
+      <header>
+        <h2>Personal Assistant</h2>
+        <span class="close-btn material-symbols-outlined">close</span>
+      </header>
+      <ul class="chatbox">
+        <li class="chat incoming">
+          <span class="material-symbols-outlined">smart_toy</span>
+          <p>歡迎來台灣! Welcome to Taiwan!<br>Feel free to ask questions in 中文 or English.</p>
+        </li>
+      </ul>
+      <div class="chat-input">
+        <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
+        <span id="mic-btn" class="material-symbols-rounded">mic</span>
+        <span id="send-btn" class="material-symbols-rounded">send</span>
+      </div>
     </div>
   </div>
 
+  <div id="map"></div>
+  <div class="copyright">©2024 黃伶俐/Cindy</div>
 </body>
 
 </html>
