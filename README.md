@@ -28,7 +28,7 @@ This project is a dynamic map of Taiwan that showcases prominent landmarks throu
 - **Visual Studio Code**:  For editing and managing the project files.
 
 ## Installation
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/hnglingli/AI-Asissted-AQI-Map.git
 
