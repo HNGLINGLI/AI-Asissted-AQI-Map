@@ -1,7 +1,7 @@
 // API keys for different services
-const GEMINI_API_KEY = "YOUR-API-KEY";  
-const TRANSLATION_API_KEY = "YOUR-API-KEY";  
-const WEATHER_API_KEY = 'YOUR-API-KEY';  
+const GEMINI_API_KEY = "AIzaSyAj_JE4GaXVSciW3T09SxO6r-OudU62YdE";  
+const TRANSLATION_API_KEY = "AIzaSyDHnHTLaA-FjCdgWUfoa2VYZpYbnX-82CM";  
+const WEATHER_API_KEY = 'ef628c71efe658c36248d8f66b58be86';  
 
 // API URLs for each service
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
@@ -145,7 +145,7 @@ const createChatLi = (message, className) => {
 const handleChat = async () => {
   userMessage = chatInput.value.trim();
   if (!userMessage) return;
-
+// alert(chatInput.value)
   chatInput.value = "";
   chatInput.style.height = `${inputInitHeight}px`;
 
@@ -157,9 +157,9 @@ const handleChat = async () => {
   chatbox.scrollTo(0, chatbox.scrollHeight);
 
   setTimeout(() => {
-    const incomingChatLi = createChatLi("Thinking...", "incoming");
-    chatbox.appendChild(incomingChatLi);
-    chatbox.scrollTo(0, chatbox.scrollHeight);
+  const incomingChatLi = createChatLi("Thinking...", "incoming");
+  chatbox.appendChild(incomingChatLi);
+  chatbox.scrollTo(0, chatbox.scrollHeight);
     generateResponse(incomingChatLi);
   }, 600);
 };
@@ -170,10 +170,6 @@ const handleInputChange = async () => {
   if (!inputText) return;
 
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(async () => {
-    const translatedText = await translatePinyinToChinese(inputText);
-    chatInput.value = translatedText; // Replace Pinyin with Chinese text
-  }, 300); // Adjust delay
 };
 
 // Event Listeners
@@ -196,7 +192,7 @@ recognition.addEventListener("result", async (event) => {
   const transcript = event.results[0][0].transcript;
   console.log("Recognized Speech:", transcript); // Log the recognized speech
   chatInput.value = transcript; // Display Pinyin initially
-
+// alert(transcript);
   // Automatically convert Pinyin to Traditional Chinese
   try {
       const chineseText = await translatePinyinToChinese(transcript);
@@ -212,7 +208,7 @@ recognition.addEventListener("result", async (event) => {
 closeBtn.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
 chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
 
-// Adjust chatbox height 
+// Adjust chatbox height dynamically
 const adjustChatboxHeight = () => {
   const inputHeight = 55;
   const copyrightHeight = 30;
@@ -231,3 +227,27 @@ chatbox.addEventListener('scroll', () => {
 
   copyright.style.opacity = scrollTop + clientHeight >= scrollHeight - 10 ? '1' : '1';
 });
+
+    // Prevent right-click context menu
+    document.addEventListener("contextmenu", function(e) {
+        e.preventDefault();
+    });
+
+    // Disable specific keyboard shortcuts
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "F12") {
+            e.preventDefault();
+        }
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i") {
+            e.preventDefault();
+        }
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "c") {
+            e.preventDefault();
+        }
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "j") {
+            e.preventDefault();
+        }
+        if (e.ctrlKey && e.key.toLowerCase() === "u") {
+            e.preventDefault();
+        }
+    });
