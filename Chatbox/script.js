@@ -1,7 +1,7 @@
 // API keys for different services
-const GEMINI_API_KEY = "AIzaSyAj_JE4GaXVSciW3T09SxO6r-OudU62YdE";  
-const TRANSLATION_API_KEY = "AIzaSyDHnHTLaA-FjCdgWUfoa2VYZpYbnX-82CM";  
-const WEATHER_API_KEY = 'ef628c71efe658c36248d8f66b58be86';  
+const GEMINI_API_KEY = "Your_API_key_here";  
+const TRANSLATION_API_KEY = "Your_API_key_here";  
+const WEATHER_API_KEY = 'Your_API_key_here';  
 
 // API URLs for each service
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
