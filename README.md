@@ -67,7 +67,9 @@ The interactive map application is designed to integrate real-time pollution dat
    - **Natural Language Processing (NLP) for Text Input**: Processes text input from users for intelligent responses.
   
 ## **AMITAC 2024 Innovation Competition**  
-This project proudly represents the **AMITAC 2024 Innovation Competition**, showcasing Generative AI as a transformative tool for environmental awareness and public health.  
+This project proudly received third place in the Advanced Management Information Technologies and Applications Conferences (AMITAC 2024) on November 30, 2024. Showcasing Generative AI as a transformative tool for environmental awareness and public health. 
+
+這個專題在2024年11月30日舉辦之「全國資訊管理前瞻技術研討會暨專題競賽 (AMITAC 2024)」第三名。
 
 <img src="img/黃伶俐%20AMITAC%202024%20海報.png" alt="AMITAC Poster" style="width:100%; max-width:700px; margin-top:20px;">  
 
