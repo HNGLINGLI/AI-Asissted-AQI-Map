@@ -65,8 +65,15 @@ The interactive map application is designed to integrate real-time pollution dat
    - **Gemini AI Chat System**: Provides AI-driven chat functionality for user interaction.
    - **Google Cloud Speech-to-Text Conversion**: Converts spoken queries into text for processing.
    - **Natural Language Processing (NLP) for Text Input**: Processes text input from users for intelligent responses.
-  
-## **AMITAC 2024 Innovation Competition**  
+
+# <img src="img/logo.png" alt="Logo" width="50" style="margin-right: 10px;">  **International Innovation Invention Competition (IIIC) 2024**  
+This project has been awarded the silver medal at the 2024 15th IIIC International Innovation Invention Competition.
+
+該專題在2024第15屆IIIC國際創新發明競賽中榮獲銀牌。
+
+<img src="img/IIIC%202024%20silver.jpg" alt="IIIC silver" style="width:100%; max-width:700px; margin-top:20px;">  
+
+# <img src="img/logo2.png" alt="Logo" width="50" style="margin-right: 10px;"> **AMITAC 2024 Innovation Competition**  
 This project proudly received third place in the Advanced Management Information Technologies and Applications Conferences (AMITAC 2024) on November 30, 2024. Showcasing Generative AI as a transformative tool for environmental awareness and public health. 
 
 這個專題在2024年11月30日舉辦之「全國資訊管理前瞻技術研討會暨專題競賽 (AMITAC 2024)」第三名。
